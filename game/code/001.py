@@ -1,11 +1,11 @@
 import smbus
 import struct
 import time
+import cv2
 
 
 UPLOAD_DATA = 1 #1:接收总的编码器数据 2:接收实时的编码器
                 #1: Receive total encoder data 2: Receive real-time encoder
-
 MOTOR_TYPE = 1  #1:520电机 2:310电机 3:测速码盘TT电机 4:TT直流减速电机 5:L型520电机
                 #1:520 motor 2:310 motor 3:speed code disc TT motor 4:TT DC reduction motor 5:L type 520 motor
 
@@ -200,27 +200,20 @@ if __name__ == "__main__":
         set_motor_parameter() # 设置自己的电机参数  Set your own motor parameters
 
         while True:
-            t += 10
-            M1 = t
-            M2 = t
-            M3 = t
-            M4 = t
-
-            if MOTOR_TYPE == 4:
-                control_pwm(M1*2, M2*2, M3*2, M4*2)
-            else:
-                control_speed(M1, M2, M3, M4)#直接发送命令控制电机  Send commands directly to control the motor
-            
-            if t> 1000 or t < -1000:
-                t = 0
-
-            if UPLOAD_DATA == 1:
-                now_string = read_all_encoder()  # 读取累计编码器数据   Read the accumulated encoder data
-                print(now_string)
-            elif UPLOAD_DATA == 2:
-                offset_string = read_10_encoder()  # 读取实时编码器数据 Read real-time encoder data
-                print(offset_string)          
-            time.sleep(0.1)
+            cap = cv2.VideoCapture(1)
+            if not cap.isOpened():
+                print("Cannot open camera")
+                exit()
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    print("Cannot receive frame")
+                    break
+                # 套用 medianBlur() 中值模糊
+                img = cv2.medianBlur(frame, 25)
+                cv2.imshow('oxxostudio', img)
+                if cv2.waitKey(1) == ord('q'):
+                    break 
 
     except KeyboardInterrupt:
             control_pwm(0, 0, 0, 0)#让电机停下来  Stop the motor
