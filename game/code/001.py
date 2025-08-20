@@ -1,7 +1,7 @@
 import smbus
 import struct
 import time
-import cv2
+import cv2 as cv 
 
 
 UPLOAD_DATA = 1 #1:接收总的编码器数据 2:接收实时的编码器
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         set_motor_parameter() # 设置自己的电机参数  Set your own motor parameters
 
         while True:
-            cap = cv2.VideoCapture(1)
+            cap = cv.VideoCapture(1)
             if not cap.isOpened():
                 print("Cannot open camera")
                 exit()
@@ -210,9 +210,10 @@ if __name__ == "__main__":
                     print("Cannot receive frame")
                     break
                 # 套用 medianBlur() 中值模糊
-                img = cv2.medianBlur(frame, 25)
-                cv2.imshow('oxxostudio', img)
-                if cv2.waitKey(1) == ord('q'):
+                img = cv.medianBlur(frame, 25)
+                cv.imshow('oxxostudio', img)
+                
+                if cv.waitKey(1) == ord('q'):
                     break 
 
     except KeyboardInterrupt:
