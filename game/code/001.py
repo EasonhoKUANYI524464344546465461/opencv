@@ -211,6 +211,8 @@ if __name__ == "__main__":
                     break
                 # 套用 medianBlur() 中值模糊
                 img = cv.medianBlur(frame, 25)
+                gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+                
                 cv.imshow('oxxostudio', img)
                 
                 if cv.waitKey(1) == ord('q'):
